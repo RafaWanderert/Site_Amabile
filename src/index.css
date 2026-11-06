@@ -1,0 +1,2217 @@
+@import 'tailwindcss';
+/* As versões salvas (versoes/) não entram na leitura de classes do Tailwind */
+@source not "../versoes";
+
+/* =====================================================================
+   Site da Amabile Wanderert: o mural da sala de atendimento.
+   Paleta da própria Amabile (creme, grafite, malva e cinco papéis pastel,
+   cada um com a sua "bolinha"). O verde-água aparece só no que é clicável.
+   Playfair Display nos títulos, Lexend no texto, Shantell Sans nas anotações à mão.
+   ===================================================================== */
+
+:root {
+  /* Base */
+  --creme: #fbf5f1; /* fundo */
+  --papel: #fffdfb; /* papel das polaroides e das folhas */
+  --grafite: #3f3d42; /* texto */
+  --cinza: #626162; /* texto de apoio */
+  --malva: #b9839d; /* traços dos rabiscos */
+  /* Malva do nome: um tom abaixo do #B9839D da marca para passar 3:1 sobre o creme (texto grande) */
+  --malva-texto: #ad7792;
+  --malva-escuro: #7f5070; /* títulos e selos */
+
+  /* Papéis pastel e suas bolinhas (o tom do marcador) */
+  --rosa: #fcd9de;
+  --rosa-ponto: #eeb0bf;
+  --amarelo: #feebc6;
+  --amarelo-ponto: #fddb95;
+  --azul: #c8dff0;
+  --azul-ponto: #b2d4ee;
+  --lilas: #e6d4eb;
+  --lilas-ponto: #e1cbe0;
+  --verde: #cee3d0;
+  --verde-ponto: #c5dcc5;
+
+  /* Tons de traço: os mesmos pastéis, mais fundos, para os fios e os ícones aparecerem sobre os campos */
+  --rosa-traco: #d98aa0;
+  --verde-traco: #79ab84;
+  --amarelo-traco: #d9a13b;
+  --azul-traco: #78a7d1;
+  --lilas-traco: #ad8abd;
+
+  /* Destaque: só no que é clicável */
+  --agua: #2d7570; /* botões (texto branco 5,4:1) */
+  --agua-escuro: #245f5b;
+  --agua-suave: #dcefea; /* faixa de chamada e hover */
+
+  /* Tipo: cinco tamanhos na página toda (o cabeçalho tem os seus, fixos) */
+  --passo-pequeno: clamp(0.8125rem, 0.79rem + 0.1vw, 0.875rem); /* 13–14px */
+  --passo-texto: clamp(1rem, 0.96rem + 0.12vw, 1.0625rem); /* 16–17px */
+  --passo-destaque: clamp(1.1875rem, 1.05rem + 0.45vw, 1.5rem); /* 19–24px */
+  --passo-titulo: clamp(2rem, 1.45rem + 2vw, 3.25rem); /* 32–52px */
+  --passo-gigante: clamp(3rem, 1.6rem + 4.4vw, 5.75rem); /* 48–92px */
+
+  /* Espaço */
+  --largura: 1240px;
+  --margem: clamp(16px, 2.4vw, 32px);
+  --vao: clamp(16px, 2vw, 28px);
+  --secao: clamp(80px, 9vw, 140px);
+  --traco-altura: calc(var(--secao) * 1.1); /* faixa dos fios entre os tópicos: 40% acima da divisa, 60% abaixo */
+  --degrade: calc(var(--secao) * 0.9); /* altura de cada metade do degradê entre duas cores (fica no respiro) */
+  --topo-fixo: 76px;
+  --raio: 28px; /* um só raio para murais e tiras; botões são pílulas */
+
+  /* Movimento (curvas da skill animate; a "mola" é o easeOutBack, só no que é de brincar) */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --mola: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@theme {
+  --color-*: initial;
+  --font-*: initial;
+  --font-sans: 'Lexend Variable', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --font-serifa: 'Playfair Display Variable', Georgia, 'Times New Roman', serif;
+  --font-mao: 'Shantell Sans Variable', 'Segoe Print', 'Comic Sans MS', cursive;
+}
+
+/* ============================== Base ============================== */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    background: var(--creme);
+    color: var(--grafite);
+    font-family: var(--font-sans);
+    font-size: var(--passo-texto);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  [id] {
+    scroll-margin-top: calc(var(--topo-fixo) + 12px);
+  }
+
+  h1,
+  h2 {
+    font-family: var(--font-serifa);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 1.08;
+    text-wrap: balance;
+  }
+
+  h3 {
+    font-weight: 600;
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: var(--rosa);
+    color: var(--grafite);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--agua);
+    outline-offset: 3px;
+  }
+}
+
+/* ============================ Estrutura ============================ */
+.recipiente {
+  width: 100%;
+  max-width: var(--largura);
+  margin-inline: auto;
+  padding-inline: var(--margem);
+}
+
+.grade {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--vao);
+}
+
+.pular {
+  position: absolute;
+  left: var(--margem);
+  top: -100px;
+  z-index: 100;
+  padding: 12px 20px;
+  border-radius: 999px;
+  background: var(--agua);
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.pular:focus {
+  top: 12px;
+}
+
+.mao {
+  font-family: var(--font-mao);
+}
+
+/* ============================ Botões e links ============================ */
+.botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 26px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--agua);
+  color: #fff;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    translate 0.2s var(--ease-out),
+    scale 0.16s var(--ease-out);
+}
+
+.botao:hover {
+  background: var(--agua-escuro);
+}
+
+.botao:active {
+  scale: 0.97;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .botao:hover {
+    translate: 0 -2px;
+  }
+
+  .botao:active {
+    translate: 0 0;
+  }
+}
+
+.link {
+  color: var(--agua);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+  text-decoration-color: var(--agua-suave);
+  transition: text-decoration-color 0.2s ease;
+}
+
+.link:hover {
+  text-decoration-color: var(--agua);
+}
+
+/* ============================ Cabeçalho (tamanhos fixos) ============================ */
+.cabecalho {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--creme);
+}
+
+.cabecalho__linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: var(--topo-fixo);
+}
+
+.marca {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--grafite);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+}
+
+.marca__selo {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding-bottom: 2px;
+  border-radius: 50%;
+  background: var(--malva-escuro);
+  color: var(--creme);
+  font-size: 17px;
+  letter-spacing: -0.03em;
+  transition: rotate 0.5s var(--mola);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .marca:hover .marca__selo {
+    rotate: -12deg;
+  }
+}
+
+.menu ul {
+  display: flex;
+  gap: clamp(20px, 2.6vw, 44px);
+}
+
+.menu a {
+  color: var(--grafite);
+  font-size: 16px;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 8px;
+  text-decoration-color: transparent;
+  transition:
+    color 0.2s ease,
+    text-decoration-color 0.2s ease;
+}
+
+.menu a:hover {
+  color: var(--agua);
+  text-decoration-color: var(--agua);
+}
+
+.hamburguer {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--agua-suave);
+  color: var(--agua);
+  font: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.hamburguer__tracos {
+  position: relative;
+  width: 16px;
+  height: 10px;
+  border-block: 2px solid currentColor;
+}
+
+.menu-movel {
+  display: none;
+}
+
+@media (width <= 860px) {
+  .menu {
+    display: none;
+  }
+
+  .hamburguer {
+    display: inline-flex;
+  }
+
+  .menu-movel[data-aberto='true'] {
+    display: block;
+    padding-bottom: 20px;
+  }
+
+  .menu-movel a {
+    display: block;
+    padding: 12px 0;
+    color: var(--grafite);
+    font-size: 22px;
+    font-weight: 500;
+    text-decoration: none;
+  }
+}
+
+@media (width <= 600px) {
+  .marca__nome {
+    font-size: 16px;
+  }
+}
+
+/* ============================ Rabiscos ============================ */
+.rabisco {
+  display: block;
+  overflow: visible;
+  color: var(--malva);
+}
+
+.rabisco path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+
+@keyframes desenhar {
+  from {
+    stroke-dashoffset: 1;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* O broto do nome se desenha ao abrir a página; os outros, quando a seção aparece */
+  .js .inicio .rabisco path {
+    animation: desenhar 1.4s var(--ease-out) 0.6s both;
+  }
+
+  .js [data-revelar] .rabisco path {
+    stroke-dashoffset: 1;
+  }
+
+  .js [data-revelar].revelado .rabisco path {
+    animation: desenhar 1.6s var(--ease-out) 0.3s both;
+  }
+}
+
+/* ============================ Polaroides ============================ */
+.foto {
+  --giro: 0deg;
+  position: relative;
+  margin: 0;
+  padding: 10px 10px 44px;
+  background: var(--papel);
+  rotate: var(--giro);
+  transition:
+    rotate 0.45s var(--mola),
+    scale 0.3s var(--mola);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .foto:hover {
+    rotate: calc(var(--giro) * 0.3);
+    scale: 1.02;
+  }
+}
+
+.foto__imagem {
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--lilas);
+}
+
+.foto--paisagem .foto__imagem {
+  aspect-ratio: 3 / 2;
+}
+
+.foto__imagem img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  -webkit-user-drag: none;
+}
+
+/* Fita adesiva, com as pontas picotadas */
+.fita {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  z-index: 1;
+  width: 92px;
+  height: 28px;
+  translate: -50% 0;
+  rotate: -4deg;
+  background: var(--rosa-ponto);
+  opacity: 0.88;
+  clip-path: polygon(0 0, 100% 0, 96% 25%, 100% 50%, 96% 75%, 100% 100%, 0 100%, 4% 75%, 0 50%, 4% 25%);
+}
+
+.fita[data-cor='amarelo'] {
+  background: var(--amarelo-ponto);
+  rotate: 5deg;
+}
+
+.fita[data-cor='azul'] {
+  background: var(--azul-ponto);
+}
+
+.fita[data-cor='lilas'] {
+  background: var(--lilas-ponto);
+}
+
+.fita[data-cor='verde'] {
+  background: var(--verde-ponto);
+  rotate: -2deg;
+}
+
+/* ============================ Primeira tela ============================ */
+/* O topo tem a cor principal da marca (malva-escuro), com os traços do banner dela */
+.inicio {
+  position: relative;
+  display: grid;
+  align-items: center;
+  --forma-cor: color-mix(in oklab, var(--malva-escuro) 62%, var(--malva)); /* um tom acima do fundo */
+  min-height: clamp(600px, calc(100svh - var(--topo-fixo)), 860px);
+  padding-block: 40px calc(var(--traco-altura) * 0.4 + 32px);
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--malva-escuro);
+  color: var(--creme);
+}
+
+/* A foto inteira, na proporção dela (2:3), à direita, alinhada à margem da página.
+   Recortada como as fotos do banner dela: borda nítida, ombros macios no alto e cantos justos
+   embaixo. Ela aparece inteira, da cabeça às mãos na mesa. */
+.inicio__foto {
+  position: absolute;
+  top: clamp(28px, 4.5vh, 48px);
+  right: max(var(--margem), calc((100% - var(--largura)) / 2 + var(--margem)));
+  bottom: calc(var(--traco-altura) * 0.4 + clamp(28px, 4.5vh, 48px)); /* termina acima dos fios da seção seguinte */
+  z-index: -1;
+  aspect-ratio: 2 / 3;
+  max-width: 46%;
+}
+
+.inicio__recortes {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.inicio__moldura {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--malva); /* enquanto a foto carrega */
+  clip-path: url(#recorte-foto);
+}
+
+.inicio__imagem {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 50%;
+  -webkit-user-drag: none;
+}
+
+/* A forma de trás: uma pedrinha de cor chapada, como as do banner, saindo por baixo e pela esquerda */
+.inicio__forma {
+  position: absolute;
+  inset: 12% -7% -6% -16%;
+  background: var(--forma-cor, var(--malva));
+  clip-path: url(#recorte-forma);
+  pointer-events: none;
+}
+
+.inicio__texto {
+  grid-column: 1 / span 6;
+}
+
+.inicio__nome {
+  color: var(--rosa);
+  font-size: var(--passo-gigante);
+  line-height: 0.98;
+  letter-spacing: -0.015em;
+}
+
+.inicio__linha {
+  display: block;
+}
+
+.inicio__linha:first-child {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.06em;
+}
+
+.inicio__broto {
+  width: 0.36em;
+  height: 0.36em;
+  margin-top: -0.04em;
+  rotate: 14deg;
+}
+
+.inicio__titulo {
+  margin-top: 28px;
+  font-size: var(--passo-destaque);
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.inicio__apoio {
+  max-width: 40ch;
+  margin-top: 14px;
+}
+
+.inicio__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 28px;
+  margin-top: 36px;
+}
+
+.inicio__crp {
+  margin-top: 28px;
+  color: var(--rosa);
+  font-size: var(--passo-pequeno);
+}
+
+/* Sobre o malva-escuro: botão claro (verde-água no texto), link e foco em creme */
+.inicio .botao {
+  background: var(--agua-suave);
+  color: var(--agua);
+}
+
+.inicio .botao:hover {
+  background: var(--creme);
+}
+
+.inicio .link {
+  color: var(--creme);
+  text-decoration-color: rgb(251 245 241 / 0.35);
+}
+
+.inicio .link:hover {
+  text-decoration-color: var(--creme);
+}
+
+.inicio :focus-visible {
+  outline-color: var(--creme);
+}
+
+.inicio .rabisco {
+  color: var(--rosa);
+}
+
+/* Os traços do banner dela: dois fios finos no alto (por trás da foto), os risquinhos
+   apontando para ela e um coração embaixo, à esquerda */
+.inicio__tracos {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+}
+
+.inicio__fios {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: auto;
+  height: 110px;
+  aspect-ratio: 1440 / 160;
+  translate: -50% 0;
+}
+
+.inicio .inicio__fio--verde {
+  stroke: var(--verde);
+}
+
+.inicio .inicio__fio--rosa {
+  stroke: var(--rosa);
+  stroke-width: 1.75;
+}
+
+.inicio__coracao {
+  position: absolute;
+  bottom: calc(var(--traco-altura) * 0.4 + 28px);
+  left: 2.5%;
+  width: 44px;
+  height: 44px;
+  rotate: -12deg;
+}
+
+.inicio__faiscas {
+  position: absolute;
+  top: 18%;
+  left: -12%;
+  width: 64px;
+  height: 64px;
+  scale: -1 1;
+  color: var(--amarelo);
+}
+
+@keyframes subir {
+  from {
+    opacity: 0;
+    translate: 0 20px;
+  }
+}
+
+@keyframes surgir {
+  from {
+    opacity: 0;
+  }
+}
+
+/* A foto chega com um zoom lento; a forma de trás surge e depois "respira" bem devagar */
+@keyframes chegarFoto {
+  from {
+    opacity: 0;
+    scale: 1.08;
+  }
+}
+
+@keyframes chegarForma {
+  from {
+    opacity: 0;
+    scale: 0.92;
+  }
+}
+
+@keyframes respirarForma {
+  to {
+    rotate: -3deg;
+    translate: 1.5% -1.5%;
+  }
+}
+
+@keyframes paralaxe {
+  to {
+    translate: 0 8%;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .js .inicio__linha,
+  .js .inicio__titulo,
+  .js .inicio__apoio,
+  .js .inicio__acoes,
+  .js .inicio__crp {
+    animation: subir 0.8s var(--ease-out) both;
+  }
+
+  .js .inicio__linha + .inicio__linha {
+    animation-delay: 0.07s;
+  }
+
+  .js .inicio__titulo {
+    animation-delay: 0.14s;
+  }
+
+  .js .inicio__apoio {
+    animation-delay: 0.21s;
+  }
+
+  .js .inicio__acoes {
+    animation-delay: 0.28s;
+  }
+
+  .js .inicio__crp {
+    animation-delay: 0.35s;
+  }
+
+  .js .inicio__imagem {
+    animation: chegarFoto 1.8s var(--ease-out) both;
+  }
+
+  .js .inicio .inicio__fios .inicio__fio {
+    animation: desenhar 2.6s ease-in-out 0.4s both;
+  }
+
+  .js .inicio .inicio__fios .inicio__fio--rosa {
+    animation-delay: 0.7s;
+  }
+
+  .js .inicio .inicio__faiscas path,
+  .js .inicio .inicio__coracao path {
+    animation-delay: 1.2s;
+  }
+
+  .js .inicio__forma {
+    animation:
+      chegarForma 1.6s var(--ease-out) 0.2s both,
+      respirarForma 14s ease-in-out 1.8s infinite alternate;
+  }
+
+  /* Fora da tela, a forma para de respirar */
+  .inicio:not([data-na-tela='true']) .inicio__forma {
+    animation-play-state: running, paused;
+  }
+}
+
+/* Paralaxe: a foto desce devagar enquanto a página sobe (onde o navegador tiver scroll-timeline) */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .inicio__moldura {
+      animation: paralaxe linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0px 100vh;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .inicio__imagem {
+    animation: surgir 0.6s ease both;
+  }
+}
+
+@media (width <= 860px) {
+  .inicio {
+    display: block;
+    min-height: 0;
+    padding-block: 0 calc(var(--traco-altura) * 0.4 + 24px);
+  }
+
+  /* No celular: a foto inteira em cima (2:3), sem cortar, dentro das margens; em telas baixas
+     ela estreita em vez de cortar */
+  .inicio__foto {
+    position: relative;
+    inset: auto;
+    width: min(100% - var(--margem) * 2 - 20px, calc(70svh * 2 / 3));
+    max-width: none;
+    margin: 28px auto 0;
+  }
+
+  .inicio__forma {
+    inset: 14% -6% -5% -9%;
+  }
+
+  .inicio__grade {
+    position: relative;
+    margin-top: 40px; /* respiro abaixo da forma de trás */
+  }
+
+  .inicio__texto {
+    grid-column: 1 / -1;
+  }
+
+  .inicio__fios,
+  .inicio__faiscas {
+    display: none;
+  }
+
+  .inicio__coracao {
+    right: 6%;
+    bottom: calc(var(--traco-altura) * 0.4 + 18px);
+    left: auto;
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* ============================ Seções e bordas de mural ============================ */
+main {
+  position: relative;
+  z-index: 1;
+  background: var(--creme);
+}
+
+/* Os fios entre os tópicos ocupam 40% da faixa acima da divisa e 60% abaixo: os dois cabem no respiro */
+.secao {
+  position: relative;
+  padding-block: var(--secao);
+}
+
+/* Cada seção tem a sua cor (--cor-campo), na mesma sequência: rosa, verde, amarelo, creme, azul, creme, lilás */
+.campo {
+  background: var(--cor-campo);
+}
+
+.campo--creme {
+  --cor-campo: var(--creme);
+  --cor-traco: var(--malva);
+}
+
+.campo--rosa {
+  --cor-campo: var(--rosa);
+  --cor-traco: var(--rosa-traco);
+}
+
+.campo--amarelo {
+  --cor-campo: var(--amarelo);
+  --cor-traco: var(--amarelo-traco);
+}
+
+.campo--azul {
+  --cor-campo: var(--azul);
+  --cor-traco: var(--azul-traco);
+}
+
+.campo--lilas {
+  --cor-campo: var(--lilas);
+  --cor-traco: var(--lilas-traco);
+}
+
+.campo--verde {
+  --cor-campo: var(--verde);
+  --cor-traco: var(--verde-traco);
+}
+
+/* Degradê leve nas trocas de cor. Cada divisa tem uma cor: o meio do caminho entre as duas seções.
+   A seção de cima termina nela e a de baixo começa nela, então a troca fica suave e sem borda.
+   Ordem: topo malva-escuro, rosa, verde, amarelo, creme, azul, creme, lilás, rodapé malva-escuro. */
+:root {
+  --divisa-jeito: color-mix(in oklab, var(--malva-escuro) 50%, var(--rosa));
+  /* Entre rosa e verde, a mistura em oklch passa por um creme-pêssego em vez de um cinza */
+  --divisa-atendimentos: color-mix(in oklch, var(--rosa) 50%, var(--verde));
+  --divisa-demandas: color-mix(in oklab, var(--verde) 50%, var(--amarelo));
+  --divisa-como: color-mix(in oklab, var(--amarelo) 50%, var(--creme));
+  --divisa-respirar: color-mix(in oklab, var(--creme) 50%, var(--azul));
+  --divisa-sobre: color-mix(in oklab, var(--azul) 50%, var(--creme));
+  --divisa-formacao: color-mix(in oklab, var(--creme) 50%, var(--lilas));
+}
+
+.jeito {
+  --fundo-topo: var(--divisa-jeito);
+  --fundo-pe: var(--divisa-atendimentos);
+}
+
+.atendimentos {
+  --fundo-topo: var(--divisa-atendimentos);
+  --fundo-pe: var(--divisa-demandas);
+}
+
+.demandas {
+  --fundo-topo: var(--divisa-demandas);
+  --fundo-pe: var(--divisa-como);
+}
+
+.como {
+  --fundo-topo: var(--divisa-como);
+  --fundo-pe: var(--divisa-respirar);
+}
+
+.respirar {
+  --fundo-topo: var(--divisa-respirar);
+  --fundo-pe: var(--divisa-sobre);
+}
+
+.sobre {
+  --fundo-topo: var(--divisa-sobre);
+  --fundo-pe: var(--divisa-formacao);
+}
+
+/* A última seção termina inteira na cor do rodapé, que vai aparecendo por baixo dela */
+.formacao {
+  --fundo-topo: var(--divisa-formacao);
+  --fundo-pe: var(--malva-escuro);
+}
+
+/* Um gradiente só, do tamanho da seção (sem camadas, para não sobrar fresta na divisa).
+   As paradas seguem uma curva suave (smoothstep) através da divisa: devagar nas pontas,
+   mais rápida no meio, onde passam os fios. Assim não aparece a linha onde o degradê começa. */
+@supports (background: linear-gradient(in oklab, red, blue)) and (color: color-mix(in oklab, red, blue)) {
+  .campo {
+    --topo-1: 36.7%;
+    --topo-2: 68.75%;
+    --topo-3: 91.4%;
+    --pe-1: 8.6%;
+    --pe-2: 31.25%;
+    --pe-3: 63.3%;
+
+    background: linear-gradient(
+      in oklab,
+      var(--fundo-topo) 0,
+      color-mix(in oklab, var(--cor-campo) var(--topo-1), var(--fundo-topo)) calc(var(--degrade) * 0.25),
+      color-mix(in oklab, var(--cor-campo) var(--topo-2), var(--fundo-topo)) calc(var(--degrade) * 0.5),
+      color-mix(in oklab, var(--cor-campo) var(--topo-3), var(--fundo-topo)) calc(var(--degrade) * 0.75),
+      var(--cor-campo) var(--degrade),
+      var(--cor-campo) calc(100% - var(--degrade)),
+      color-mix(in oklab, var(--fundo-pe) var(--pe-1), var(--cor-campo)) calc(100% - var(--degrade) * 0.75),
+      color-mix(in oklab, var(--fundo-pe) var(--pe-2), var(--cor-campo)) calc(100% - var(--degrade) * 0.5),
+      color-mix(in oklab, var(--fundo-pe) var(--pe-3), var(--cor-campo)) calc(100% - var(--degrade) * 0.25),
+      var(--fundo-pe) 100%
+    );
+  }
+
+  /* Na última, a curva inteira cabe no pé da seção (ela vai até o malva do rodapé) */
+  .formacao {
+    --pe-1: 15.6%;
+    --pe-2: 50%;
+    --pe-3: 84.4%;
+  }
+
+  .inicio {
+    background: linear-gradient(
+      in oklab,
+      var(--malva-escuro) calc(100% - var(--degrade)),
+      color-mix(in oklab, var(--divisa-jeito) 8.6%, var(--malva-escuro)) calc(100% - var(--degrade) * 0.75),
+      color-mix(in oklab, var(--divisa-jeito) 31.25%, var(--malva-escuro)) calc(100% - var(--degrade) * 0.5),
+      color-mix(in oklab, var(--divisa-jeito) 63.3%, var(--malva-escuro)) calc(100% - var(--degrade) * 0.25),
+      var(--divisa-jeito) 100%
+    );
+  }
+}
+
+.campo--creme.sobre {
+  --cor-traco: var(--rosa-traco); /* o broto rosa, como no banner */
+}
+
+/* Fios: a cor de cada tópico chega como dois fios finos atravessando a divisa,
+   o da cor nova (com um lacinho) e o da cor que ficou para trás. Eles se desenham ao aparecer. */
+.traco {
+  position: absolute;
+  top: calc(var(--traco-altura) * -0.4);
+  right: 0;
+  left: 0;
+  height: var(--traco-altura);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* No fim do conteúdo, os fios descem do lilás para o rodapé */
+.traco--embaixo {
+  top: calc(100% - var(--traco-altura) * 0.4);
+}
+
+.traco__desenho {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: auto;
+  height: 100%;
+  aspect-ratio: 1440 / 144;
+  translate: -50% 0;
+  color: var(--cor-traco);
+}
+
+.traco .traco__segundo {
+  stroke: var(--cor-antes);
+  stroke-width: 1.75;
+}
+
+.traco[data-antes='rosa'] {
+  --cor-antes: var(--rosa-traco);
+}
+
+.traco[data-antes='verde'] {
+  --cor-antes: var(--verde-traco);
+}
+
+.traco[data-antes='amarelo'] {
+  --cor-antes: var(--amarelo-traco);
+}
+
+.traco[data-antes='azul'] {
+  --cor-antes: var(--azul-traco);
+}
+
+.traco[data-antes='malva'] {
+  --cor-antes: var(--malva);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* O fio não sobe como o resto: ele se desenha, da esquerda para a direita */
+  .js .traco[data-revelar] {
+    opacity: 1;
+    translate: none;
+  }
+
+  .js .traco[data-revelar].revelado .traco__principal {
+    animation: desenhar 2.2s ease-in-out both;
+  }
+
+  .js .traco[data-revelar].revelado .traco__segundo {
+    animation: desenhar 2.4s ease-in-out 0.25s both;
+  }
+}
+
+.titulo {
+  color: var(--malva-escuro);
+  font-size: var(--passo-titulo);
+}
+
+/* O ícone de traço do tópico, colado na última palavra do título */
+.titulo__fim {
+  white-space: nowrap;
+}
+
+.titulo__icone {
+  display: inline-block;
+  width: 0.7em;
+  height: 0.7em;
+  margin-left: 0.14em;
+  vertical-align: 0.12em;
+  color: var(--cor-traco, var(--malva));
+  rotate: 8deg;
+}
+
+.titulo__icone path {
+  stroke-width: 2;
+}
+
+.nota-mao {
+  color: var(--malva-escuro);
+  font-family: var(--font-mao);
+  font-size: var(--passo-destaque);
+  font-weight: 600;
+  line-height: 1.15;
+  rotate: -4deg;
+}
+
+.bolinha {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--rosa-ponto);
+}
+
+.bolinha[data-cor='amarelo'] {
+  background: var(--amarelo-ponto);
+}
+
+.bolinha[data-cor='azul'] {
+  background: var(--azul-ponto);
+}
+
+.bolinha[data-cor='lilas'] {
+  background: var(--lilas-ponto);
+}
+
+.bolinha[data-cor='verde'] {
+  background: var(--verde-ponto);
+}
+
+/* Revelação ao rolar: título, depois texto, depois o resto (70–80 ms entre eles) */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-revelar] {
+    opacity: 0;
+    translate: 0 24px;
+    transition:
+      opacity 0.7s var(--ease-out),
+      translate 0.7s var(--ease-out);
+  }
+
+  .js [data-revelar='2'] {
+    transition-delay: 0.08s;
+  }
+
+  .js [data-revelar='3'] {
+    transition-delay: 0.16s;
+  }
+
+  .js [data-revelar].revelado {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+/* Folhas de papel presas no mural */
+.folha {
+  position: relative;
+  padding: clamp(28px, 3.4vw, 52px);
+  background: var(--papel);
+}
+
+/* Folha de caderno destacada: bordas de cima e de baixo picotadas */
+.folha--picotada::before,
+.folha--picotada::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 12px;
+  background: var(--papel);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='12' viewBox='0 0 24 12'%3E%3Cpath d='M0 12 12 0l12 12z'/%3E%3C/svg%3E")
+    repeat-x left bottom / 24px 12px;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='12' viewBox='0 0 24 12'%3E%3Cpath d='M0 12 12 0l12 12z'/%3E%3C/svg%3E")
+    repeat-x left bottom / 24px 12px;
+}
+
+.folha--picotada::before {
+  bottom: calc(100% - 1px);
+}
+
+.folha--picotada::after {
+  top: calc(100% - 1px);
+  rotate: 180deg;
+}
+
+/* ============================ Do jeito de cada criança ============================ */
+.jeito__grade {
+  align-items: center;
+  row-gap: 40px;
+}
+
+.jeito__bloco {
+  grid-column: 1 / span 7;
+}
+
+.jeito__texto {
+  max-width: 32em;
+  margin-top: 28px;
+  font-size: var(--passo-destaque);
+  line-height: 1.45;
+}
+
+.jeito__lado {
+  grid-column: 9 / -1;
+}
+
+/* Criança empinando pipa, em traço fino */
+.jeito__desenho {
+  width: 100%;
+  max-width: 400px;
+  margin-inline: auto;
+  color: var(--malva-escuro);
+}
+
+.pipa path {
+  stroke-width: 2.25;
+}
+
+.pipa .pipa__papel {
+  fill: var(--amarelo-ponto);
+}
+
+.pipa .pipa__laco {
+  fill: var(--rosa-ponto);
+}
+
+.pipa .pipa__roupa {
+  fill: var(--papel);
+}
+
+/* A pipa balança em volta da ponta de baixo, onde a linha está presa */
+.pipa__voo {
+  transform-box: view-box;
+  transform-origin: 232px 98px;
+}
+
+@keyframes balancarPipa {
+  from {
+    rotate: -4deg;
+  }
+
+  to {
+    rotate: 5deg;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-revelar] .pipa :is(.pipa__papel, .pipa__laco, .pipa__roupa) {
+    fill-opacity: 0;
+    transition: fill-opacity 0.8s ease 1.2s;
+  }
+
+  .js [data-revelar].revelado .pipa :is(.pipa__papel, .pipa__laco, .pipa__roupa) {
+    fill-opacity: 1;
+  }
+
+  .jeito__lado[data-na-tela='true'] .pipa__voo {
+    animation: balancarPipa 3.6s ease-in-out infinite alternate;
+  }
+}
+
+@media (width <= 960px) {
+  .jeito__bloco {
+    grid-column: 1 / -1;
+  }
+
+  .jeito__lado {
+    grid-column: 1 / -1;
+    width: min(320px, 80%);
+    margin-inline: auto;
+  }
+}
+
+/* ============================ Atendimentos ============================ */
+.atendimentos__grade {
+  align-items: center;
+  row-gap: 64px;
+}
+
+.atendimentos__folha {
+  grid-column: 1 / span 7;
+}
+
+.atendimentos__apoio {
+  max-width: 46ch;
+  margin-top: 14px;
+}
+
+.servicos {
+  margin-top: 36px;
+}
+
+.servicos__grupo {
+  color: var(--malva-escuro);
+  font-size: var(--passo-texto);
+}
+
+.servicos__lista {
+  display: grid;
+  gap: 18px;
+  margin-top: 14px;
+}
+
+.servico {
+  display: grid;
+  grid-template-columns: 12px 1fr;
+  column-gap: 14px;
+}
+
+.servico .bolinha {
+  margin-top: 0.5em;
+}
+
+.servico__nome {
+  font-weight: 600;
+}
+
+.servico__sigla {
+  color: var(--malva-escuro);
+}
+
+.servico__texto {
+  max-width: 52ch;
+  margin-top: 2px;
+  color: var(--cinza);
+}
+
+.atendimentos__lado {
+  position: relative;
+  grid-column: 8 / -1;
+  text-align: center;
+}
+
+.atendimentos__foto {
+  --giro: -3deg;
+  width: 100%;
+  max-width: 460px;
+  margin-inline: auto;
+}
+
+.atendimentos__nota {
+  max-width: 14em;
+  margin: 40px auto 0;
+}
+
+.atendimentos__estrela {
+  position: absolute;
+  top: -36px;
+  right: 0;
+  width: 56px;
+  color: var(--malva-escuro);
+}
+
+@media (width <= 960px) {
+  .atendimentos__folha,
+  .atendimentos__lado {
+    grid-column: 1 / -1;
+  }
+
+  .atendimentos__lado {
+    width: min(440px, 92%);
+    margin-inline: auto;
+  }
+}
+
+/* ============================ Quem eu acompanho ============================ */
+.demandas__grade {
+  align-items: start;
+  row-gap: 40px;
+}
+
+.demandas__titulo {
+  grid-column: 1 / -1;
+}
+
+.demandas__lista {
+  display: grid;
+  grid-column: 1 / span 7;
+}
+
+.demanda {
+  display: flex;
+  align-items: baseline;
+  gap: clamp(14px, 2vw, 28px);
+  width: 100%;
+  padding: 2px 0;
+  border: 0;
+  background: none;
+  color: var(--grafite);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.demanda__sigla {
+  flex: none;
+  min-width: 3.3em; /* a sigla mais larga (AH/SD): os nomes ficam alinhados */
+  font-family: var(--font-mao);
+  font-size: var(--passo-gigante);
+  font-weight: 700;
+  line-height: 1.05;
+  font-variation-settings: 'BNCE' 0;
+  transition:
+    color 0.2s ease,
+    font-variation-settings 0.45s var(--mola);
+}
+
+/* A bolinha mostra qual sigla está aberta no bilhete */
+.demanda__marca {
+  align-self: center;
+  opacity: 0;
+  scale: 0.5;
+  transition:
+    opacity 0.2s ease,
+    scale 0.25s var(--ease-out);
+}
+
+.demanda[aria-selected='true'] .demanda__marca {
+  opacity: 1;
+  scale: 1;
+}
+
+.demanda__nome {
+  max-width: 22ch;
+  color: var(--cinza);
+  transition: color 0.2s ease;
+}
+
+.demanda[aria-selected='true'] .demanda__nome {
+  color: var(--grafite);
+}
+
+/* Só com o mouse por cima: as letras ficam verdes e pulam (eixo "bounce" da Shantell Sans) */
+@media (hover: hover) and (pointer: fine) {
+  .demanda:hover .demanda__sigla {
+    color: var(--agua);
+    font-variation-settings: 'BNCE' 100;
+  }
+}
+
+.demanda:focus-visible {
+  outline-offset: 6px;
+}
+
+.demandas__lado {
+  position: sticky;
+  top: calc(var(--topo-fixo) + 40px);
+  grid-column: 8 / -1;
+}
+
+.bilhete {
+  position: relative;
+  padding: 44px 34px 34px;
+  background: var(--papel);
+  rotate: -2deg;
+}
+
+.bilhete__sigla {
+  color: var(--malva-escuro);
+  font-size: var(--passo-destaque);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.bilhete__titulo {
+  margin-top: 10px;
+  font-size: var(--passo-destaque);
+}
+
+.bilhete__texto {
+  margin-top: 12px;
+}
+
+@keyframes trocar {
+  from {
+    opacity: 0;
+    translate: 0 10px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .bilhete {
+    animation: trocar 0.35s var(--ease-out) both;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demanda__sigla {
+    transition: color 0.2s ease;
+  }
+}
+
+@media (width <= 960px) {
+  .demandas__lista,
+  .demandas__lado {
+    grid-column: 1 / -1;
+  }
+
+  .demandas__lado {
+    position: relative;
+    top: auto;
+  }
+}
+
+@media (width <= 600px) {
+  .demanda {
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 10px;
+    padding-block: 6px;
+  }
+
+  .demanda__sigla {
+    min-width: 0;
+  }
+
+  .demanda__nome {
+    flex-basis: 100%;
+    max-width: none;
+  }
+
+  .bilhete {
+    padding: 40px 22px 26px;
+  }
+}
+
+/* ============================ Como funciona ============================ */
+.como__intro {
+  align-items: end;
+  row-gap: 20px;
+}
+
+.como__titulo {
+  grid-column: 1 / span 5;
+}
+
+.como__apoio {
+  grid-column: 7 / span 6;
+  max-width: 46ch;
+}
+
+.etapas {
+  display: flex;
+  height: 440px;
+  margin-top: 56px;
+  border-radius: var(--raio);
+  overflow: hidden;
+}
+
+/* A ordem está na cor: do malva mais escuro ao mais claro */
+.etapa {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  transition:
+    flex-grow 0.4s var(--ease-out),
+    filter 0.2s ease;
+}
+
+.etapa[data-aberta='true'] {
+  flex-grow: 5.5;
+}
+
+.etapa[data-tom='0'] {
+  background: #7f5070;
+  color: #fff;
+}
+
+.etapa[data-tom='1'] {
+  background: #976383;
+  color: #fff;
+}
+
+.etapa[data-tom='2'] {
+  background: #c9a0b5;
+  color: var(--grafite);
+}
+
+.etapa[data-tom='3'] {
+  background: #ddc1cf;
+  color: var(--grafite);
+}
+
+.etapa[data-tom='4'] {
+  background: #eedde6;
+  color: var(--grafite);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .etapa:not([data-aberta='true']):hover {
+    filter: brightness(1.07);
+  }
+}
+
+.etapa__cabeca {
+  height: 100%;
+}
+
+.etapa__botao {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  height: 100%;
+  padding: 24px 20px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.etapa__botao:focus-visible {
+  outline-color: currentColor;
+  outline-offset: -8px;
+}
+
+.etapa__nome {
+  font-size: var(--passo-texto);
+  font-weight: 600;
+  white-space: nowrap;
+  writing-mode: vertical-rl;
+  rotate: 180deg;
+}
+
+.etapa[data-aberta='true'] .etapa__cabeca {
+  height: auto;
+}
+
+.etapa[data-aberta='true'] .etapa__botao {
+  height: auto;
+  padding: 36px 36px 0;
+  cursor: default;
+}
+
+.etapa[data-aberta='true'] .etapa__nome {
+  font-family: var(--font-serifa);
+  font-size: var(--passo-destaque);
+  font-weight: 500;
+  white-space: normal;
+  writing-mode: horizontal-tb;
+  rotate: 0deg;
+}
+
+.etapa__corpo {
+  position: absolute;
+  right: 36px;
+  bottom: 36px;
+  left: 36px;
+  max-width: 36ch;
+}
+
+/* Desenho da etapa aberta, na metade direita da tira; ele se desenha ao abrir */
+.etapa__desenho {
+  position: absolute;
+  top: 40px;
+  right: 40px;
+  width: min(32%, 220px);
+  color: var(--malva-escuro);
+}
+
+.etapa__desenho path {
+  stroke-width: 2.5;
+}
+
+.etapa[data-tom='0'] .etapa__desenho,
+.etapa[data-tom='1'] .etapa__desenho {
+  color: var(--rosa);
+}
+
+.etapa:not([data-aberta='true']) .etapa__desenho {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .etapa__corpo:not([hidden]) {
+    animation: subir 0.5s var(--ease-out) 0.15s both;
+  }
+}
+
+@media (width <= 960px) {
+  .como__titulo,
+  .como__apoio {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (width <= 760px) {
+  .etapas {
+    flex-direction: column;
+    height: auto;
+    margin-top: 40px;
+    border-radius: 22px;
+  }
+
+  .etapa,
+  .etapa[data-aberta='true'] {
+    flex: none;
+  }
+
+  .etapa__botao {
+    align-items: center;
+    height: 58px;
+    padding: 0 20px;
+  }
+
+  .etapa__nome {
+    writing-mode: horizontal-tb;
+    rotate: 0deg;
+  }
+
+  .etapa[data-aberta='true'] .etapa__botao {
+    padding: 22px 20px 0;
+  }
+
+  .etapa__corpo {
+    position: static;
+    max-width: none;
+    padding: 10px 20px 24px;
+  }
+
+  .etapa__desenho {
+    display: none;
+  }
+}
+
+/* ============================ Respiração do balão ============================ */
+.respirar__grade {
+  align-items: center;
+  row-gap: 48px;
+}
+
+.respirar__texto {
+  grid-column: 1 / span 6;
+}
+
+.respirar__apoio {
+  max-width: 44ch;
+  margin-top: 20px;
+}
+
+.respirar__acoes {
+  margin-top: 32px;
+}
+
+.respirar__nota {
+  max-width: 46ch;
+  margin-top: 24px;
+  font-size: var(--passo-pequeno);
+}
+
+.respirar__palco {
+  display: grid;
+  grid-column: 8 / -1;
+  justify-items: center;
+  text-align: center;
+}
+
+.balao {
+  width: min(220px, 52%);
+  height: auto;
+  overflow: visible;
+}
+
+.balao__inflavel {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  scale: 0.72;
+  transition: scale 0.9s var(--ease-out);
+}
+
+/* O ritmo da respiração é o próprio conteúdo: enche em 4 s, segura, esvazia em 5 s */
+.respirar__palco[data-fase='inspira'] .balao__inflavel,
+.respirar__palco[data-fase='segura'] .balao__inflavel {
+  scale: 1;
+  transition: scale 4s ease-in-out;
+}
+
+.respirar__palco[data-fase='solta'] .balao__inflavel {
+  scale: 0.62;
+  transition: scale 5s ease-in-out;
+}
+
+.balao__corpo,
+.balao__no {
+  fill: var(--rosa-ponto);
+  stroke: var(--malva-escuro);
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+
+.balao__brilho {
+  fill: none;
+  stroke: var(--papel);
+  stroke-width: 7;
+  stroke-linecap: round;
+}
+
+.balao__fio {
+  fill: none;
+  stroke: var(--malva-escuro);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+/* Parado e na tela, o balão flutua de leve */
+@keyframes flutuar {
+  50% {
+    translate: 0 -8px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .respirar__palco[data-na-tela='true'][data-fase='parado'] .balao,
+  .respirar__palco[data-na-tela='true'][data-fase='fim'] .balao {
+    animation: flutuar 4s ease-in-out infinite;
+  }
+}
+
+.respirar__dica {
+  min-height: 2.5em;
+  margin-top: 20px;
+  color: var(--malva-escuro);
+  font-size: var(--passo-destaque);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.respirar__rodada {
+  min-height: 1.6em;
+  margin-top: 4px;
+  font-size: var(--passo-pequeno);
+}
+
+@media (width <= 960px) {
+  .respirar__texto,
+  .respirar__palco {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ============================ Sobre ============================ */
+.sobre__grade {
+  align-items: center;
+  row-gap: 56px;
+}
+
+.sobre__corpo {
+  grid-column: 1 / span 7;
+}
+
+.sobre__abertura {
+  max-width: 30em;
+  margin-top: 28px;
+  font-size: var(--passo-destaque);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.sobre__abertura strong {
+  color: var(--malva-escuro);
+  font-weight: 600;
+}
+
+.sobre__texto {
+  max-width: 60ch;
+  margin-top: 24px;
+}
+
+.sobre__texto p + p {
+  margin-top: 1em;
+}
+
+.sobre__fim {
+  font-size: var(--passo-destaque);
+  line-height: 1.3;
+}
+
+mark {
+  padding: 0 0.12em;
+  border-radius: 0.15em;
+  background: var(--rosa-ponto);
+  color: inherit;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+mark[data-cor='amarelo'] {
+  background: var(--amarelo-ponto);
+}
+
+mark[data-cor='azul'] {
+  background: var(--azul-ponto);
+}
+
+mark[data-cor='lilas'] {
+  background: var(--lilas-ponto);
+}
+
+mark[data-cor='verde'] {
+  background: var(--verde-ponto);
+}
+
+.sobre__link {
+  padding: 0 0.15em;
+  border-radius: 0.15em;
+  background: var(--agua-suave);
+  color: var(--agua);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.sobre__link:hover {
+  background: var(--agua);
+  color: #fff;
+}
+
+.sobre__lado {
+  grid-column: 9 / -1;
+}
+
+.sobre__foto {
+  --giro: 3deg;
+  width: 100%;
+  max-width: 340px;
+  margin-inline: auto;
+}
+
+@media (width <= 960px) {
+  .sobre__corpo,
+  .sobre__lado {
+    grid-column: 1 / -1;
+  }
+
+  .sobre__lado {
+    width: min(320px, 80%);
+    margin-inline: auto;
+  }
+}
+
+/* No celular, a abertura vira um parágrafo de texto (grande, ela passaria de 4 linhas) */
+@media (width <= 600px) {
+  .sobre__abertura {
+    font-size: var(--passo-texto);
+    line-height: 1.6;
+  }
+}
+
+/* ============================ Formação ============================ */
+.formacao__grade {
+  align-items: start;
+  row-gap: 48px;
+  margin-top: 48px;
+}
+
+.formacao__esquerda {
+  display: grid;
+  grid-column: 1 / span 5;
+  gap: 56px;
+}
+
+.formacao__folha {
+  padding: 48px clamp(24px, 3vw, 44px) 40px;
+}
+
+.formacao__folha--academica {
+  rotate: -1.5deg;
+}
+
+.formacao__folha--cursos {
+  grid-column: 6 / -1;
+  rotate: 1deg;
+}
+
+.formacao__polaroide {
+  padding-inline: 12%;
+}
+
+.formacao__foto {
+  --giro: -3deg;
+}
+
+.formacao__grupo {
+  color: var(--malva-escuro);
+  font-size: var(--passo-destaque);
+}
+
+.lista-bolinhas {
+  display: grid;
+  gap: 18px;
+  margin-top: 24px;
+}
+
+.lista-bolinhas li {
+  display: grid;
+  grid-template-columns: 12px 1fr;
+  column-gap: 14px;
+}
+
+.lista-bolinhas .bolinha {
+  margin-top: 0.5em;
+}
+
+.lista-bolinhas__nome {
+  display: block;
+  font-weight: 500;
+}
+
+.lista-bolinhas__onde {
+  display: block;
+  margin-top: 2px;
+  color: var(--cinza);
+  font-size: var(--passo-pequeno);
+}
+
+.formacao__broto {
+  position: absolute;
+  right: 24px;
+  bottom: 20px;
+  width: 52px;
+}
+
+.formacao__coracao {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 40px;
+  color: var(--rosa-ponto);
+}
+
+@media (width <= 960px) {
+  .formacao__esquerda,
+  .formacao__folha--cursos {
+    grid-column: 1 / -1;
+  }
+
+  .formacao__folha--academica {
+    rotate: -1deg;
+  }
+
+  .formacao__folha--cursos {
+    rotate: 0.6deg;
+  }
+
+  .formacao__polaroide {
+    width: min(300px, 76%);
+    margin-inline: auto;
+    padding-inline: 0;
+  }
+}
+
+/* ============================ Rodapé ============================ */
+.rodape {
+  position: sticky;
+  bottom: 0;
+  z-index: 0;
+  background: var(--malva-escuro);
+  color: var(--creme);
+}
+
+/* No alto, o espaço dos fios que descem da última seção */
+.rodape__dentro {
+  padding-top: calc(var(--traco-altura) * 0.6 + clamp(32px, 4vw, 56px));
+}
+
+.rodape__colunas {
+  row-gap: 28px;
+  font-size: 16px;
+}
+
+.rodape__coluna {
+  grid-column: span 3;
+}
+
+.rodape__coluna p + p,
+.rodape__coluna li + li {
+  margin-top: 6px;
+}
+
+.rodape__rotulo {
+  margin-bottom: 10px;
+  color: var(--rosa);
+  font-weight: 600;
+}
+
+.rodape a {
+  color: var(--creme);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+  text-decoration-color: transparent;
+  transition: text-decoration-color 0.2s ease;
+}
+
+.rodape a:hover {
+  text-decoration-color: var(--rosa);
+}
+
+.rodape a:focus-visible {
+  outline-color: var(--rosa);
+}
+
+.rodape__legal {
+  padding-bottom: 28px;
+  font-size: var(--passo-pequeno);
+}
+
+/* Brinquedos passando: o trilho tem o grupo duas vezes e anda metade da largura (emenda sem pulo) */
+.desfile {
+  margin-block: clamp(44px, 5vw, 72px);
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, rgb(0 0 0 / 0), #000 7%, #000 93%, rgb(0 0 0 / 0));
+  mask-image: linear-gradient(to right, rgb(0 0 0 / 0), #000 7%, #000 93%, rgb(0 0 0 / 0));
+}
+
+.desfile__trilho {
+  display: flex;
+  width: max-content;
+}
+
+.desfile__grupo {
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(36px, 5vw, 72px);
+  padding-right: clamp(36px, 5vw, 72px);
+}
+
+.brinquedo {
+  flex: none;
+  width: clamp(60px, 6.4vw, 88px);
+  height: auto;
+  overflow: visible;
+}
+
+.brinquedo :is(path, circle, ellipse) {
+  fill: none;
+  stroke: var(--creme);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.brinquedo .b-amarelo {
+  fill: var(--amarelo-ponto);
+}
+
+.brinquedo .b-rosa {
+  fill: var(--rosa-ponto);
+}
+
+.brinquedo .b-azul {
+  fill: var(--azul-ponto);
+}
+
+.brinquedo .b-verde {
+  fill: var(--verde-ponto);
+}
+
+.brinquedo .b-lilas {
+  fill: var(--lilas-ponto);
+}
+
+.brinquedo .b-creme {
+  fill: var(--creme);
+}
+
+.brinquedo .b-olho {
+  fill: var(--grafite);
+  stroke: none;
+}
+
+.brinquedo .b-roda {
+  fill: var(--grafite);
+}
+
+@keyframes desfilar {
+  to {
+    translate: -50% 0;
+  }
+}
+
+@keyframes saltitar {
+  to {
+    translate: 0 -8px;
+    rotate: -3deg;
+  }
+}
+
+@keyframes girar {
+  to {
+    rotate: 360deg;
+  }
+}
+
+/* Anda só com o rodapé à vista; para quando o mouse passa por cima */
+@media (prefers-reduced-motion: no-preference) {
+  .desfile__trilho {
+    animation: desfilar 50s linear infinite;
+  }
+
+  .brinquedo {
+    animation: saltitar 1.6s ease-in-out infinite alternate;
+  }
+
+  .brinquedo:nth-child(even) {
+    animation-delay: -0.8s;
+  }
+
+  .catavento__helice {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: girar 5s linear infinite;
+  }
+
+  .desfile:not([data-na-tela='true']) :is(.desfile__trilho, .brinquedo, .catavento__helice) {
+    animation-play-state: paused;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
+  .desfile:hover :is(.desfile__trilho, .brinquedo, .catavento__helice) {
+    animation-play-state: paused;
+  }
+}
+
+/* Com "reduzir movimento", os brinquedos ficam parados, numa fileira centralizada */
+@media (prefers-reduced-motion: reduce) {
+  .desfile {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .desfile__trilho {
+    width: auto;
+    justify-content: center;
+  }
+
+  .desfile__grupo {
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-right: 0;
+  }
+
+  .desfile__grupo + .desfile__grupo {
+    display: none;
+  }
+}
+
+@media (width <= 760px) {
+  .rodape__coluna {
+    grid-column: span 6;
+  }
+}

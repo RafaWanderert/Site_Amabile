@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <!-- Título, descrição, nome e domínio vêm de src/content/site.ts (veja vite.config.ts) -->
+    <title>{{titulo}}</title>
+    <meta name="description" content="{{descricao}}" />
+    <!-- Enquanto a Amabile avalia, o site fica fora do Google. Quando ela aprovar, troque para "index, follow". -->
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="canonical" href="{{url}}/" />
+    <meta name="theme-color" content="#FBF5F1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:site_name" content="{{nome}}" />
+    <meta property="og:title" content="{{titulo}}" />
+    <meta property="og:description" content="{{descricao}}" />
+    <meta property="og:url" content="{{url}}/" />
+    <!-- og:image (imagem de compartilhamento 1200×630) entra quando as fotos forem escolhidas -->
+
+    <script>
+      // Com JavaScript, as seções entram com animação ao rolar. Se o app não carregar em 4 s, mostra tudo.
+      document.documentElement.classList.add('js')
+      setTimeout(function () {
+        if (!window.__revelar) document.documentElement.classList.remove('js')
+      }, 4000)
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
