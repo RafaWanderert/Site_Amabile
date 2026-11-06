@@ -10,7 +10,7 @@ export const site = {
   publico: 'Crianças e adolescentes',
   crp: 'CRP 12/25551',
   /** Domínio do site, sem barra no fim. Troque pelo domínio definitivo antes de publicar. */
-  url: 'https://site-amabile.onrender.com',
+  url: 'https://psicoamabilewanderert.onrender.com',
 }
 
 /** Usado no <head> do index.html (pelo vite.config.ts) e nos dados estruturados. */
