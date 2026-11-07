@@ -21,6 +21,35 @@ const DICA: Record<Fase, string> = {
   fim: 'Muito bem! Quer brincar de novo?',
 }
 
+/** Folga entre o que fica à vista e as bordas da área visível */
+const FOLGA = 16
+
+/** Posição do elemento na página, sem contar transformações (a revelação ao rolar desloca 24 px) */
+function topoNaPagina(el: HTMLElement) {
+  let y = 0
+  for (let e: HTMLElement | null = el; e; e = e.offsetParent as HTMLElement | null) y += e.offsetTop
+  return y
+}
+
+/**
+ * Ao começar, a página leva o balão para o centro da área visível (abaixo do cabeçalho fixo).
+ * No celular o botão fica acima do balão: se os dois cabem juntos na tela, o botão (agora "Parar")
+ * continua à vista. A rolagem segue o scroll-behavior do html: suave, ou instantânea com "reduzir movimento".
+ */
+function focarNoBalao(palco: HTMLElement, botao: HTMLElement | null) {
+  const cabecalho = document.querySelector<HTMLElement>('.cabecalho')?.offsetHeight ?? 0
+  const visivel = window.innerHeight - cabecalho
+  const topo = topoNaPagina(palco)
+  let alvo = topo + palco.offsetHeight / 2 - cabecalho - visivel / 2
+  if (botao) {
+    // Rolar além disto esconde o botão; rolar menos que aquilo corta o balão
+    const limiteBotao = topoNaPagina(botao) - cabecalho - FOLGA
+    const minimoPalco = topo + palco.offsetHeight + FOLGA - window.innerHeight
+    if (alvo > limiteBotao && limiteBotao >= minimoPalco) alvo = limiteBotao
+  }
+  window.scrollTo({ top: Math.max(0, alvo) })
+}
+
 /**
  * A respiração do balão: o balão enche (puxa o ar), espera (segura) e esvazia (solta),
  * três vezes. A dica escrita acompanha cada parte e é lida pelos leitores de tela.
@@ -29,6 +58,7 @@ export function Respirar() {
   const [fase, setFase] = useState<Fase>('parado')
   const [rodada, setRodada] = useState(1)
   const palco = useRef<HTMLDivElement>(null)
+  const botao = useRef<HTMLButtonElement>(null)
   const ativo = fase === 'inspira' || fase === 'segura' || fase === 'solta'
   // O balão só flutua enquanto está na tela
   useNaTela(palco)
@@ -50,7 +80,12 @@ export function Respirar() {
 
   const alternar = () => {
     setRodada(1)
-    setFase(ativo ? 'parado' : 'inspira')
+    if (ativo) {
+      setFase('parado')
+      return
+    }
+    setFase('inspira')
+    if (palco.current) focarNoBalao(palco.current, botao.current)
   }
 
   const rotulo = ativo ? 'Parar' : fase === 'fim' ? 'Brincar de novo' : 'Começar'
@@ -67,7 +102,7 @@ export function Respirar() {
             {respirar.texto}
           </p>
           <div className="respirar__acoes" data-revelar="3">
-            <button type="button" className="botao" onClick={alternar}>
+            <button ref={botao} type="button" className="botao" onClick={alternar}>
               {rotulo}
             </button>
           </div>
