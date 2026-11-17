@@ -182,7 +182,7 @@
   font-size: 16px;
   font-weight: 600;
   text-decoration: none;
-  cursor: pointer;
+  cursor: var(--cursor-clique);
   transition:
     background-color 0.2s ease,
     translate 0.2s var(--ease-out),
@@ -303,7 +303,7 @@
   font: inherit;
   font-size: 16px;
   font-weight: 600;
-  cursor: pointer;
+  cursor: var(--cursor-clique);
 }
 
 .hamburguer__tracos {
@@ -1333,6 +1333,9 @@ main {
 .demandas__lista {
   display: grid;
   grid-column: 1 / span 7;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .demanda {
@@ -1346,7 +1349,7 @@ main {
   color: var(--grafite);
   font: inherit;
   text-align: left;
-  cursor: pointer;
+  cursor: var(--cursor-clique);
 }
 
 .demanda__sigla {
@@ -1372,7 +1375,7 @@ main {
     scale 0.25s var(--ease-out);
 }
 
-.demanda[aria-selected='true'] .demanda__marca {
+.demanda[aria-expanded='true'] .demanda__marca {
   opacity: 1;
   scale: 1;
 }
@@ -1383,7 +1386,7 @@ main {
   transition: color 0.2s ease;
 }
 
-.demanda[aria-selected='true'] .demanda__nome {
+.demanda[aria-expanded='true'] .demanda__nome {
   color: var(--grafite);
 }
 
@@ -1403,6 +1406,14 @@ main {
   position: sticky;
   top: calc(var(--topo-fixo) + 40px);
   grid-column: 8 / -1;
+}
+
+.demandas__dica {
+  padding-top: 24px;
+  color: var(--cinza);
+  font-size: var(--passo-destaque);
+  line-height: 1.2;
+  rotate: -2deg;
 }
 
 .bilhete {
@@ -1564,7 +1575,7 @@ main {
   color: inherit;
   font: inherit;
   text-align: left;
-  cursor: pointer;
+  cursor: var(--cursor-clique);
 }
 
 .etapa__botao:focus-visible {
@@ -1587,7 +1598,7 @@ main {
 .etapa[data-aberta='true'] .etapa__botao {
   height: auto;
   padding: 36px 36px 0;
-  cursor: default;
+  cursor: var(--cursor-padrao);
 }
 
 .etapa[data-aberta='true'] .etapa__nome {
@@ -2217,5 +2228,32 @@ mark[data-cor='verde'] {
 @media (width <= 760px) {
   .rodape__coluna {
     grid-column: span 6;
+  }
+}
+
+/* ============================ Cursor ============================ */
+/* Um lápis de cor, como os que riscam os traços do site: malva no geral e
+   verde-água no que se clica. Só com mouse; a ponta fica no ponto (6, 6). */
+:root {
+  --cursor-padrao: auto;
+  --cursor-clique: pointer;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :root {
+    --cursor-padrao: url('./assets/cursor-lapis.svg') 6 6, auto;
+    --cursor-clique: url('./assets/cursor-lapis-clique.svg') 6 6, pointer;
+  }
+
+  html {
+    cursor: var(--cursor-padrao);
+  }
+
+  a,
+  button,
+  summary,
+  label[for],
+  [role='button'] {
+    cursor: var(--cursor-clique);
   }
 }

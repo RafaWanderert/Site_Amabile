@@ -98,12 +98,6 @@ export const demandas: { titulo: string; itens: Demanda[] } = {
         'Identificação das altas habilidades e cuidado com o desenvolvimento socioemocional, para que o potencial venha acompanhado de bem-estar.',
       cor: 'verde',
     },
-    {
-      sigla: 'SHSD',
-      nome: 'Síndrome de Habilidades Superdotadas',
-      texto: 'Acompanhamento das necessidades emocionais e sociais, em parceria com a família e a escola.',
-      cor: 'lilas',
-    },
   ],
 }
 
